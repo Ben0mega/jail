@@ -31,16 +31,17 @@ bool is_file_allowed(string file) {
 	getcwd(path, PATH_MAX);
 	file_c[PATH_MAX-1] = path[PATH_MAX-1] = '\0';
 #else
-	char path[4096], file_c[PATH_MAX];
+	char path[4096], file_c[4096];
 	strncpy(file_c, file.c_str(), 4096);
 	getcwd(path, 4096);
 	file_c[4096-1] = path[4096-1] = '\0';
 #endif
-	if(!strcmp(path, dirname(file_c))) {
+	if(!strcmp(path,file_c) || !strcmp(path, dirname(file_c))) {
 		return true;
 	}
 	
     }
+
     return false;
 }
 
@@ -57,7 +58,7 @@ bool process_fileopen(unsigned long param1, unsigned long param2, int pid) {
         log_violation("Could not find file: " + string(file));
         return false;
     }
-
+    log_info(1,"file_trying_to_open:"+string(fullpath));
     if(!is_file_allowed(string(fullpath))) {
         log_violation("Attempt to access restricted file:" + string(file));
         return false;

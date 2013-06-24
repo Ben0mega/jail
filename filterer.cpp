@@ -217,14 +217,19 @@ void process_system_call(int pid) {
     case SYS_ugetrlimit:
       break;
     #endif
-
     case SYS_open:
         if(!process_fileopen(param1, param2, pid))
             goto Default;
         break;
 
+    case SYS_lseek:
     case SYS_read:
     case SYS_readv:
+        break;
+    case SYS_getdents: //Note: this requires a file descriptor, so it should be save.
+			// Only allowed to list any folders if local is specified - should use other check
+        if(!get_local())
+            goto Default;
         break;
 
     case SYS_write:
@@ -262,8 +267,15 @@ void process_system_call(int pid) {
     case SYS_getpid:
     case SYS_time:
     case SYS_gettid:
-/*    case SYS_set_tid_address: // TODO: evaluate...
-    case SYS_setresuid: // TODO: evaluate...
+
+    case SYS_rt_sigreturn:
+    case SYS_wait4:
+    case SYS_getcwd:
+    //case SYS_vfork:
+    //case SYS_pipe:
+    //case SYS_set_tid_address: // TODO: evaluate...
+
+/*    case SYS_setresuid: // TODO: evaluate...
     case SYS_setresgid: // TODO: evaluate...
     case SYS_setuid: // TODO: evaluate...
     case SYS_setgid: // TODO: evaluate...
