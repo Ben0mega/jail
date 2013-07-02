@@ -5,13 +5,6 @@
 #include <sstream>
 #include <sys/resource.h> 
 
-using namespace std;
-#ifndef NDEBUG
-#define DEBUG(x) cerr << x << endl
-#else
-#define DEBUG(x)
-#endif
-
 #define TIME_NO_LIMIT 0
 #define MEM_NO_LIMIT 0
 #define FILE_NO_LIMIT 0
@@ -24,7 +17,7 @@ using namespace std;
 
 template<class A, class B>
 A convert(const B & x, const A & d = A()) {
-	stringstream ss;
+	std::stringstream ss;
 	ss << x;
 	A r = d;
 	ss >> r;
@@ -32,12 +25,12 @@ A convert(const B & x, const A & d = A()) {
 }
 
 // Prints usage information.
-void print_usage();
+void print_usage(const char* argv0);
 
 // Parses the file indicated by file.  Returns true on success.
-bool parse_file(const char * file);
+bool parse_file(const char* file);
 
 // Parses the arguments passed by command line.  Returns -1 on error.
-int parse_arguments(int argc, char ** argv);
+int parse_arguments(int argc, char** argv);
 
 #endif
