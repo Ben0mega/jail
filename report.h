@@ -1,22 +1,26 @@
 #ifndef __REPORT_H
 #define __REPORT_H
 
-#include <iostream>
-#include <sys/resource.h>
+#include <string>
 
-using namespace std;
+class process_state;
+struct rusage;
+
+enum create_type {
+  CREATE_FORK,
+  CREATE_CLONE,
+  CREATE_ROOT
+};
 
 bool init_report();
-bool finalize_report(const rusage&);
+bool finalize_report();
 
-void log_exit_status(int exit_status);
-void log_term_signal(int term_signal);
-void log_blocked_syscall(unsigned long sys_num, unsigned long result,
-                         unsigned long param1,  unsigned long param2,
-                         unsigned long param3,  unsigned long param4,
-                         unsigned long param5,  unsigned long param6);
-void log_violation(const string & message);
-void log_error(const string & message);
-void log_info(int level, const string & message);
+void log_create(pid_t pid, pid_t ppid, enum create_type type);
+void log_exit(pid_t pid, const exit_data& data, bool final);
+
+void log_blocked_syscall(process_state& st);
+void log_violation(pid_t pid, const std::string& message);
+void log_error(pid_t pid, const std::string& message);
+void log_info(pid_t pid, int level, const std::string& message);
 
 #endif
