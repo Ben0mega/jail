@@ -43,15 +43,19 @@ void log_create(pid_t pid, pid_t ppid, enum create_type type) {
   } else if(get_json()) {
     fprintf(fout, "\t{\n");
     fprintf(fout, "\t\t\"pid\": %d,\n", pid);
-    fprintf(fout, "\t\t\"type\": \"create\",\n");
+    fprintf(fout, "\t\t\"type\": \"create\"");
     if(type != CREATE_ROOT) {
+		fprintf(fout, ",\n");
       fprintf(fout, "\t\t\"parent_pid\": %d,\n", ppid);
       if(type == CREATE_FORK) {
         fprintf(fout, "\t\t\"fork\": true\n");
       } else {
         fprintf(fout, "\t\t\"clone\": true\n");
       }
-    }
+    } else {
+	   fprintf(fout, "\n");
+	 }
+
     fprintf(fout, "\t},\n");
   } else {
     if(type == CREATE_ROOT) {
@@ -107,7 +111,7 @@ void log_exit(pid_t pid, const exit_data& data, bool final) {
         fprintf(fout, "%d:status:%d\n", pid, data.status);
         break;
       case EXIT_SIGNAL:
-        fprintf(fout, "%d:term_signal:%s\n", pid,
+        fprintf(fout, "%d:term_signal:\"%s\"\n", pid,
                 get_signal_name(data.signum).c_str());
         break;
       case EXIT_KILLED:

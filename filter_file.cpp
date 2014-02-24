@@ -40,14 +40,23 @@ static bool is_file_allowed(pid_t pid, std::string file) {
 #ifdef PATH_MAX
     char path[PATH_MAX], file_c[PATH_MAX];
     strncpy(file_c, file.c_str(), PATH_MAX);
-    getcwd(path, PATH_MAX);
+    if(!get_cwd().empty()){
+      strncpy(path, get_cwd().c_str(), PATH_MAX);
+	 } else {
+	   getcwd(path, PATH_MAX);
+	 }
     file_c[PATH_MAX-1] = path[PATH_MAX-1] = '\0';
 #else
     char path[4096], file_c[4096];
     strncpy(file_c, file.c_str(), 4096);
-    getcwd(path, 4096);
+    if(!get_cwd().empty()){
+      strncpy(path, get_cwd().c_str(), 4096);
+	 } else {
+	   getcwd(path, 4046);
+	 }
     file_c[4096-1] = path[4096-1] = '\0';
 #endif
+//	 log_info(pid, 4, std::string("File path: ")+file_c + "\nDir path: "+path);
     if(!strcmp(path,file_c) || !strcmp(path, dirname(file_c))) {
       return true;
     }
