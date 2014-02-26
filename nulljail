@@ -1,0 +1,59 @@
+#!/bin/bash
+
+REPORT_FILE=""
+TIME_LIMIT=""
+MEM_LIMIT=""
+FILE_LIMIT=""
+args=("$@")
+for ((i=0; i < $#; i++)) {
+	case "${args[$i]}" in
+	"-p" | "--local" | "-n" | "--tcp" | "--udp" | "--listen" | "--rdonly" | "-r" | "--report" | "-j" | "--json")
+		continue
+	    ;;
+	 "--report_file")
+i=$((i+1))
+	REPORT_FILE="${args[$i]}"
+	    ;;
+	"-m" )
+i=$((i+1))
+	MEM_LIMIT="${args[$i]}"
+	    ;;
+	"--file_limit" )
+i=$((i+1))
+	FILE_LIMIT="${args[$i]}"
+	    ;;
+	"-t" )
+i=$((i+1))
+	TIME_LIMIT="${args[$i]}"
+	    ;;
+	"-t" | "-w" | "-m" | "--file_limit" | "--cwd" | "--chroot" | "-u" | "--user" | "-g" | "--group" | "--net_regexp" | "-f" | "--files" | "--report_file" | "-l" | "--log_level")
+i=$((i+1))
+	    ;;
+	*)
+	EXE="${args[@]:$i}"
+break
+	    ;;
+	esac
+}
+
+$(
+if [ "$TIME_LIMIT" != "" ]
+then
+ulimit -t $TIME_LIMIT
+fi
+if [ "$MEM_LIMIT" != "" ]
+then
+ulimit -m $MEM_LIMIT
+fi
+if [ "$FILE_LIMIT" != "" ]
+then 
+	ulimit -x $FILE_LIMIT
+fi
+$EXE
+)
+RET="$?"
+
+if [ "$REPORT_FILE" != "" ]
+then
+	echo "[ { \"type\":\"exit\", \"status\":$RET } ]" > $REPORT_FILE
+fi
